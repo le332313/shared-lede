@@ -30,7 +30,7 @@ on:
         required: true
         default: '版本：lean lede源码<br/>1.登陆IP 192.168.31.1，密码password<br/>2.升级内容：内核升级'
       artifact:
-        description: '若要上传到构件（artifact），请输入true'
+        description: '若要上传到artifact，请输入true'
         required: true
         default: 'false'
 # 定时任务
@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: master
-      - name: 空间清理
+      - name: 环境准备
         run: |
           sudo rm -rf /usr/share/dotnet /etc/mysql /etc/apt/sources.list.d /usr/local/lib/android /opt/ghc
           sudo -E apt-get -y purge ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* php* android*
@@ -55,6 +55,8 @@ jobs:
           sudo -E apt-get -y autoremove --purge
           sudo -E apt-get clean
           df -h
+      - name: 脚本移动
+        run: mv -f ./preset-models/* ./
       - name: 下载源码与插件
         run: |
           chmod +x 1clone.sh
@@ -69,7 +71,7 @@ jobs:
           ./1modify.sh
       - name: 生成.config文件
         run: |
-          mv -f ./.config.R4A ./.config
+          mv -f ./1.config.R4A ./.config
           sed -i 's/^[ \t]*//g' ./.config
           make defconfig
       - name: Make download
@@ -101,16 +103,12 @@ jobs:
           zip -r ./allfiles.zip ./*
           cd packages
           zip -r ../packages.zip ./*
-          cd ../..
-          mv ./R4A说明.txt 说明.txt
-          zip -u ./collected_firmware/allfiles.zip 说明.txt
       - name: 上传固件到release
         if: github.event.inputs.release == 'true'
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.RELEASE_FIRMWARE }}
-          file: collected_firmware/* # 文件所在位置
-          #asset_name: collected_firmware.zip # tag下的资源名字
+          file: collected_firmware/*
           tag: ${{ env.tag_title }}
           release_name: "${{ env.release_pre }} ${{ github.event.inputs.release_title }}" 
           overwrite: true
@@ -119,7 +117,7 @@ jobs:
           file_glob: true
       - name: 上传固件到artifact
         if: github.event.inputs.artifact == 'true'
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3
         with:
           name: collected_firmware
           path: |

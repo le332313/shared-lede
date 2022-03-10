@@ -2,7 +2,7 @@
 
 流程文档大量参考[P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt)、[KFERMercer/OpenWrt-CI](https://github.com/KFERMercer/OpenWrt-CI)，十分感谢！
 
-默认机型小米4A千兆版，源码[coolsnowwolf/lede](https://github.com/coolsnowwolf/lede)，需要其他机型简单修改即可。
+预置机型有小米4A千兆版、小米CR6608、红米AC2100，需要其他机型可参考以上，并修改根目录、.github/workflows目录下的“0”开头的模板文件，以作新增机型。
 
 喜欢的话，Star一下，方便再找。
 
@@ -28,7 +28,7 @@
 
 ### 4. 自定义固件
 
-以R4A为例，主要修改三个文本
+以R4A为例，主要修改三个文本，在preset-models目录中
 
 > `1clone.sh`
 
@@ -38,7 +38,7 @@
 
 固件初始化设置，修改登录IP、主机名、WiFi名称等。
 
-> `.config.R4A`
+> `1.config.R4A`
 
 只带luci应用、theme这两部分，流程中会转为.config，并自动补全为完整的。
 
@@ -66,7 +66,7 @@ Actions流程顺利完成(显示为绿色)后，去release(或者artifact)下载
 
 ## 关于小米4A千兆版
 
-1.创建好Actions secrets后，直接运行`Workflow`就能编译出固件。默认插件数量较少，对插件有增、减需要的，到`.config.R4A`中自行选择。若在`1clone.sh`中添加了插件源，在`.config.R4A`要作对应修改，建议先在本地make menuconfig测试。
+1.创建好Actions secrets后，直接运行`Workflow`就能编译出固件。默认插件数量较少，对插件有增、减需要的，到`1.config.R4A`中自行选择。若在`1clone.sh`中添加了插件源，在`1.config.R4A`要作对应修改，建议先在本地make menuconfig测试。
 
 2.该机型需修改分区才能在breed直刷，参考[帖子](https://www.right.com.cn/forum/thread-4052254-1-1.html)，本项目中已修改好。
 
